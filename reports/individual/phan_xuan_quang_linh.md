@@ -1,6 +1,7 @@
 # Bao Cao Ca Nhan - Lab Day 10: Data Pipeline & Observability
 
-**Ho va ten:** Phan Xuan Quang Linh - MSSV: 2A202600492  
+**Ho va ten:** Phan Xuan Quang Linh 
+**Ma HV:** 2A202600492  
 **Vai tro:** Monitoring / Freshness + Group Report  
 **Ngay nop:** 2026-04-15
 
