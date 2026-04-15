@@ -2,7 +2,7 @@
 
 **Họ và tên:** Nguyễn Đức Tiến 
 **Mã HV:** 0982872004
-**Vai trò:** Monitoring - Quality / Expectation  
+**Vai trò:** Quality / Expectation + Runbook Owner  
 **Ngày nộp:** 15/04/2026  
 
 ---
