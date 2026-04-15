@@ -1,7 +1,7 @@
 # Báo Cáo Cá Nhân — Lab Day 10: Data Pipeline & Observability
 
-**Họ và tên:** Bùi Cao Chinh - MHV: 2A202600001
-**Vai trò:** Embed / Evaluation
+**Họ và tên:** Bùi Cao Chinh - **MHV**: 2A202600001
+**Vai trò:** Evaluation
 **Ngày nộp:** 2026-04-15
 
 ---
@@ -12,7 +12,7 @@
 Tôi chịu trách nhiệm chính về module đánh giá truy xuất dữ liệu trong file `eval_retrieval.py` và tổng hợp bằng chứng chất lượng vào file báo cáo chung `docs/quality_report.md`.
 
 **Kết nối với thành viên khác:**
-Tôi làm việc chặt chẽ với người phụ trách **Cleaning (Người số 3)** để hiểu các rule sửa lỗi và người phụ trách **Monitoring (Người số 6)** để đồng bộ các chỉ số về Freshness. Công việc của tôi là người "kiểm chứng cuối cùng" (Gatekeeper) để đảm bảo dữ liệu sau khi qua pipeline thực sự cải thiện được độ chính xác khi AI truy xuất.
+Tôi làm việc chặt chẽ với người phụ trách **Cleaning** để hiểu các rule sửa lỗi và người phụ trách **Monitoring** để đồng bộ các chỉ số về Freshness. Công việc của tôi là người "kiểm chứng cuối cùng" (Gatekeeper) để đảm bảo dữ liệu sau khi qua pipeline thực sự cải thiện được độ chính xác khi AI truy xuất.
 
 **Bằng chứng (commit / comment trong code):**
 Tôi đã thực hiện các lần chạy pipeline thực tế với `run_id: before-fix` (chế độ inject lỗi) và `after-fix` (chế độ sạch) để tạo ra các tập tin bằng chứng `before_eval.csv` và `after_eval.csv` trong thư mục `artifacts/eval/`.
