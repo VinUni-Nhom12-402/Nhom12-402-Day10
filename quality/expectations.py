@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass
+from datetime import datetime
 from typing import Any, Dict, List, Tuple
 
 
@@ -17,6 +18,20 @@ class ExpectationResult:
     passed: bool
     severity: str  # "warn" | "halt"
     detail: str
+
+
+def _is_parseable_iso_datetime(value: str) -> bool:
+    text = (value or "").strip()
+    if not text:
+        return False
+    try:
+        if text.endswith("Z"):
+            datetime.fromisoformat(text.replace("Z", "+00:00"))
+        else:
+            datetime.fromisoformat(text)
+        return True
+    except ValueError:
+        return False
 
 
 def run_expectations(cleaned_rows: List[Dict[str, Any]]) -> Tuple[List[ExpectationResult], bool]:
@@ -109,6 +124,35 @@ def run_expectations(cleaned_rows: List[Dict[str, Any]]) -> Tuple[List[Expectati
             ok6,
             "halt",
             f"violations={len(bad_hr_annual)}",
+        )
+    )
+
+    # E7: exported_at phải parse được để freshness / manifest không báo sai vì dữ liệu bẩn.
+    bad_exported_at = [
+        r
+        for r in cleaned_rows
+        if not _is_parseable_iso_datetime((r.get("exported_at") or "").strip())
+    ]
+    ok7 = len(bad_exported_at) == 0
+    results.append(
+        ExpectationResult(
+            "exported_at_parseable_iso_datetime",
+            ok7,
+            "halt",
+            f"invalid_exported_at_rows={len(bad_exported_at)}",
+        )
+    )
+
+    # E8: chunk_id phải duy nhất để Chroma upsert idempotent và không ghi đè sai chunk.
+    chunk_ids = [(r.get("chunk_id") or "").strip() for r in cleaned_rows]
+    duplicate_chunk_id_count = len(chunk_ids) - len(set(chunk_ids))
+    ok8 = duplicate_chunk_id_count == 0
+    results.append(
+        ExpectationResult(
+            "chunk_id_unique",
+            ok8,
+            "warn",
+            f"duplicate_chunk_ids={duplicate_chunk_id_count}",
         )
     )
 

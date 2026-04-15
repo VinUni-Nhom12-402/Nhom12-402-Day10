@@ -2,7 +2,7 @@
 Cleaning rules — raw export → cleaned rows + quarantine.
 
 Baseline gồm các failure mode mở rộng (allowlist doc_id, parse ngày, HR stale version).
-Sinh viên thêm ≥3 rule mới: mỗi rule phải ghi `metric_impact` (xem README — chống trivial).
+Sinh viên thêm ≥3 rule mới: mỗi rule phải ghi `metric_impact` (xemm README — chống trivial).
 """
 
 from __future__ import annotations
@@ -10,10 +10,11 @@ from __future__ import annotations
 import csv
 import hashlib
 import re
+from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Tuple
 
-# Khớp export hợp lệ trong lab (mở rộng khi nhóm thêm doc mới — phải đồng bộ contract).
+# Khớpp export hợp lệ trong lab (mở rộng khi nhóm thêm doc mới — phải đồng bộ contract).
 ALLOWED_DOC_IDS = frozenset(
     {
         "policy_refund_v4",
@@ -53,6 +54,17 @@ def _normalize_effective_date(raw: str) -> Tuple[str, str]:
     return "", "invalid_effective_date_format"
 
 
+def _normalize_exported_at(raw: str) -> Tuple[str, str]:
+    s = (raw or "").strip()
+    if not s:
+        return "", "missing_exported_at"
+    try:
+        datetime.fromisoformat(s)
+        return s, ""
+    except ValueError:
+        return "", "invalid_exported_at_format"
+
+
 def load_raw_csv(path: Path) -> List[Dict[str, str]]:
     rows: List[Dict[str, str]] = []
     with path.open(encoding="utf-8", newline="") as f:
@@ -75,8 +87,10 @@ def clean_rows(
     2) Chuẩn hoá effective_date sang YYYY-MM-DD; quarantine nếu không parse được.
     3) Quarantine: chunk hr_leave_policy có effective_date < 2026-01-01 (bản HR cũ / conflict version).
     4) Quarantine: chunk_text rỗng hoặc effective_date rỗng sau chuẩn hoá.
-    5) Loại trùng nội dung chunk_text (giữ bản đầu).
-    6) Fix stale refund: policy_refund_v4 chứa '14 ngày làm việc' → 7 ngày.
+    5) Quarantine: chunk_text quá ngắn (< 8 ký tự) để tránh nội dung không đủ thông tin.
+    6) Quarantine: exported_at thiếu hoặc không đúng định dạng datetime ISO.
+    7) Loại trùng nội dung chunk_text (giữ bản đầu).
+    8) Fix stale refund: policy_refund_v4 chứa '14 ngày làm việc' → 7 ngày.
     """
     quarantine: List[Dict[str, Any]] = []
     seen_text: set[str] = set()
@@ -99,6 +113,14 @@ def clean_rows(
             continue
         if eff_err == "invalid_effective_date_format":
             quarantine.append({**raw, "reason": eff_err, "effective_date_raw": eff_raw})
+            continue
+
+        exported_at_norm, exported_at_err = _normalize_exported_at(exported_at)
+        if exported_at_err == "missing_exported_at":
+            quarantine.append({**raw, "reason": exported_at_err})
+            continue
+        if exported_at_err == "invalid_exported_at_format":
+            quarantine.append({**raw, "reason": exported_at_err, "exported_at_raw": exported_at})
             continue
 
         if doc_id == "hr_leave_policy" and eff_norm < "2026-01-01":
@@ -147,7 +169,7 @@ def clean_rows(
                 "doc_id": doc_id,
                 "chunk_text": fixed_text,
                 "effective_date": eff_norm,
-                "exported_at": exported_at or "",
+                "exported_at": exported_at_norm,
             }
         )
 
