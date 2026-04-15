@@ -57,7 +57,7 @@ def main() -> int:
     with out.open("w", encoding="utf-8") as f:
         for q in qs:
             text = q["question"]
-            res = col.query(query_texts=[text], n_results=args.top_k)
+            res = col.query(query_texts=[text], n_results=args.top_k )
             docs = (res.get("documents") or [[]])[0]
             metas = (res.get("metadatas") or [[]])[0]
             blob = " ".join(docs).lower()
@@ -78,12 +78,14 @@ def main() -> int:
                 "hits_forbidden": bad_forb,
                 "top1_doc_matches": top1_ok if want_top1 else None,
                 "top_k_used": args.top_k,
-                "grading_criteria": q.get("grading_criteria", []),
+                "grading_criteria": q.get("grading_criteria", [] ),
             }
-            f.write(json.dumps(rec, ensure_ascii=False) + "\n")
+            f.write(json.dumps(rec, ensure_ascii=False) + "\n" )
     print(f"Wrote {out}")
+
     return 0
 
 
 if __name__ == "__main__":
+    
     raise SystemExit(main())
