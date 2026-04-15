@@ -115,6 +115,16 @@ def clean_rows(
             quarantine.append({**raw, "reason": "missing_chunk_text"})
             continue
 
+        # Rule 1 (Mới): Lọc và xóa bỏ các HTML tags rác hoặc phần tử vỡ ra khỏi chunk_text
+        if "<" in text and ">" in text:
+            clean_text = re.sub(r"<[^>]+>", "", text).strip()
+            if clean_text != text:
+                text = clean_text + " [cleaned: removed_html_tags]"
+                # Nếu lọc xong mà text lại trở thành rỗng thì quarantine luôn
+                if not clean_text:
+                    quarantine.append({**raw, "reason": "empty_after_html_strip"})
+                    continue
+
         key = _norm_text(text)
         if key in seen_text:
             quarantine.append({**raw, "reason": "duplicate_chunk_text"})
