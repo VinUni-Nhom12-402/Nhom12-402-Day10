@@ -137,7 +137,7 @@ def clean_rows(
             quarantine.append({**raw, "reason": "missing_chunk_text"})
             continue
 
-        # Rule 1 (Mới): Lọc và xóa bỏ các HTML tags rác hoặc phần tử vỡ ra khỏi chunk_text
+        # Rule 1 : Lọc và xóa bỏ các HTML tags rác hoặc phần tử vỡ ra khỏi chunk_text
         if "<" in text and ">" in text:
             clean_text = re.sub(r"<[^>]+>", "", text).strip()
             if clean_text != text:
