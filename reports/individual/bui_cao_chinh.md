@@ -1,7 +1,7 @@
 # Báo Cáo Cá Nhân — Lab Day 10: Data Pipeline & Observability
 
 **Họ và tên:** Bùi Cao Chinh - **MHV**: 2A202600001
-**Vai trò:** Evaluation
+**Vai trò:** Retrieval Eval + Quality Report Owner
 **Ngày nộp:** 2026-04-15
 
 ---
